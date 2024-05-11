@@ -1,4 +1,4 @@
-package _type
+package response
 
 type Response struct {
 	success bool

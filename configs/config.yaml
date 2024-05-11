@@ -1,0 +1,14 @@
+redis:
+  addr: '121.43.138.158:6379'
+  password: 'wj81512851'
+  db: 0
+mysql:
+  addr: '121.43.138.158:3306'
+  user: 'wj'
+  password: 'wj81512851'
+  dbName: 'caipiaotong'
+  charset: 'utf8mb4&parseTime=True&loc=Local'
+token:
+  secretKey: "wangjunzhenshuai"
+  issuer: "www.caipiaotong.com"
+  expiresTime: 604800
