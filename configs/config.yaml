@@ -8,7 +8,3 @@ mysql:
   password: 'wj81512851'
   dbName: 'caipiaotong'
   charset: 'utf8mb4&parseTime=True&loc=Local'
-token:
-  secretKey: "wangjunzhenshuai"
-  issuer: "www.caipiaotong.com"
-  expiresTime: 604800

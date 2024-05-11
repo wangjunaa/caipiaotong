@@ -4,6 +4,6 @@ import "caipiaotong/internal/initial"
 
 func main() {
 	initial.InitConfig()
-	initial.InitCache()
 	initial.InitDB()
+	initial.InitCache()
 }
