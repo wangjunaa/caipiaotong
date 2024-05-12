@@ -1,7 +1,7 @@
 package route_v1
 
 import (
-	"caipiaotong/internal/api/api_v1"
+	"caipiaotong/api/api_v1"
 	"caipiaotong/internal/middleware"
 	"github.com/gin-gonic/gin"
 )
