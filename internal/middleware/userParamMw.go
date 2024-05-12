@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"caipiaotong/configs/constant"
+	"caipiaotong/internal/models"
 	"caipiaotong/internal/type/response"
 	"github.com/gin-gonic/gin"
 )
@@ -46,9 +47,9 @@ func GetDelParam(c *gin.Context) {
 		return
 	}
 	//读取手机号
-	phone := c.GetString(constant.CData)
+	user := c.MustGet(constant.CUser).(models.User)
 	c.Set(constant.CData, map[string]string{
-		"phone":    phone,
+		"phone":    user.Phone,
 		"password": password,
 	})
 	c.Next()
@@ -63,9 +64,9 @@ func GetUpdateParam(c *gin.Context) {
 		return
 	}
 	//读取手机号
-	phone := c.GetString(constant.CData)
+	user := c.MustGet(constant.CUser).(models.User)
 	c.Set(constant.CData, map[string]string{
-		"phone":       phone,
+		"phone":       user.Phone,
 		"password":    password,
 		"newPassword": newPassword,
 		"newUsername": newUsername,

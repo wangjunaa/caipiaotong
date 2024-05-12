@@ -2,11 +2,10 @@ package api_v1
 
 import (
 	"caipiaotong/configs/constant"
+	"caipiaotong/internal/models"
 	"caipiaotong/internal/service"
 	"caipiaotong/internal/type/response"
-	"errors"
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
 func Register(c *gin.Context) {
@@ -28,16 +27,7 @@ func Login(c *gin.Context) {
 	response.SuccessResp(c, 200, constant.MsgSuccess, token)
 }
 func UserGet(c *gin.Context) {
-	phone := c.GetString(constant.CData)
-	user, err := service.UserGet(phone)
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			response.SuccessResp(c, 200, constant.MsgUserNotExist, nil)
-		} else {
-			response.ErrResp(c, 500, constant.MsgInternalErr)
-		}
-		return
-	}
+	user := c.MustGet(constant.CUser).(models.User)
 	response.SuccessResp(c, 200, constant.MsgSuccess, user)
 }
 func UserUpdate(c *gin.Context) {

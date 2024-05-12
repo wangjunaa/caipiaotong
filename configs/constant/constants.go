@@ -31,6 +31,7 @@ const (
 
 	//用于context的数据操作
 	CData  = "Data"
+	CUser  = "user"
 	CToken = "token"
 )
 

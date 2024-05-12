@@ -1,17 +1,18 @@
 package models
 
 import (
-	"gorm.io/gorm"
 	"time"
 )
 
 type User struct {
-	gorm.Model
-	Username string    `json:"username" gorm:"not null"`
-	Phone    string    `json:"phone" gorm:"index:idx_phone;unique;not null"`
-	Password string    `json:"password" gorm:"not null"`
-	LoginAt  time.Time `json:"loginAt"`
-	IsAdmin  bool      `json:"isAdmin"`
+	ID        uint      `gorm:"primarykey"`
+	CreatedAt time.Time `json:"createdAt"`
+	UpdatedAt time.Time `json:"updatedAt"`
+	Username  string    `json:"username" gorm:"not null"`
+	Phone     string    `json:"phone" gorm:"index:idx_phone;unique;not null"`
+	Password  string    `json:"password" gorm:"not null"`
+	LoginAt   time.Time `json:"loginAt"`
+	IsAdmin   bool      `json:"isAdmin"`
 }
 
 func (user *User) TableName() string {

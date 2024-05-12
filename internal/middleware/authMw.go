@@ -20,7 +20,15 @@ func MwAuthentication(c *gin.Context) {
 		c.Abort()
 		return
 	}
+
+	user, err := service.UserGet(phone)
+	if err != nil {
+		response.ErrResp(c, 401, constant.MsgUserNotExist)
+		c.Abort()
+		return
+	}
+
 	//存入用户信息
-	c.Set(constant.CData, phone)
+	c.Set(constant.CUser, *user)
 	c.Next()
 }
