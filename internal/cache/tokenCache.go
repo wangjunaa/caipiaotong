@@ -3,6 +3,7 @@ package cache
 import (
 	"caipiaotong/configs/constant"
 	"context"
+	"errors"
 	"github.com/go-redis/redis/v8"
 )
 
@@ -20,6 +21,9 @@ func NewTokenCache(client *redis.Client) TokenCache {
 
 func (c *tokenCache) GetByOwnerPhone(ctx context.Context, phone string) (string, error) {
 	token, err := c.client.HGet(ctx, constant.TokenCachePrefix, phone).Result()
+	if errors.Is(err, redis.Nil) {
+		return "", nil
+	}
 	if err != nil {
 		return "", err
 	}

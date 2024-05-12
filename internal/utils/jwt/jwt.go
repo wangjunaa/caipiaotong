@@ -34,7 +34,7 @@ func ParseToken(tokenString string) (*jwt.Token, error) {
 	return token, nil
 }
 
-// CheckToken 检查token是否正确并返回用户phone
+// CheckToken 检查token是否正确并返回令牌中的用户phone
 func CheckToken(tokenString string) (string, error) {
 	token, err := ParseToken(tokenString)
 	if err != nil {

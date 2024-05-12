@@ -17,8 +17,8 @@ func newRedisClient() *redis.Client {
 	return client
 }
 func InitCache() {
-	connect.Cache = newRedisClient()
-	if err := connect.Cache.Ping(context.Background()).Err(); err != nil {
+	connect.Rdb = newRedisClient()
+	if err := connect.Rdb.Ping(context.Background()).Err(); err != nil {
 		panic(err)
 	}
 	log.Println("redis connected")

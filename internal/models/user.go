@@ -7,10 +7,11 @@ import (
 
 type User struct {
 	gorm.Model
-	Username string
-	Phone    string `gorm:"index:idx_phone"`
-	Password string `json:"-"`
-	LoginAt  time.Time
+	Username string    `json:"username" gorm:"not null"`
+	Phone    string    `json:"phone" gorm:"index:idx_phone;unique;not null"`
+	Password string    `json:"password" gorm:"not null"`
+	LoginAt  time.Time `json:"loginAt"`
+	IsAdmin  bool      `json:"isAdmin"`
 }
 
 func (user *User) TableName() string {

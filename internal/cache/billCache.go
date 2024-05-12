@@ -6,6 +6,7 @@ import (
 	"caipiaotong/internal/utils/conv"
 	"context"
 	"encoding/json"
+	"errors"
 	"github.com/go-redis/redis/v8"
 )
 
@@ -74,6 +75,9 @@ func (c *billCache) Add(ctx context.Context, bill ...*models.Bill) error {
 func (c *billCache) GetBillsByPhone(ctx context.Context, phone string) ([]*models.Bill, error) {
 	key := conv.Join(":", constant.BillCachePrefix, phone)
 	billIds, err := c.client.SMembers(ctx, key).Result()
+	if errors.Is(err, redis.Nil) {
+		return nil, nil
+	}
 	if err != nil {
 		return nil, err
 	}

@@ -5,6 +5,7 @@ import (
 	"caipiaotong/internal/models"
 	"context"
 	"encoding/json"
+	"errors"
 	"github.com/go-redis/redis/v8"
 )
 
@@ -22,6 +23,9 @@ func NewUserCache(client *redis.Client) UserCache {
 }
 func (c *userCache) GetByPhone(ctx context.Context, phone string) (*models.User, error) {
 	result, err := c.client.HGet(ctx, constant.UserCachePrefix, phone).Result()
+	if errors.Is(err, redis.Nil) {
+		return nil, nil
+	}
 	if err != nil {
 		return nil, err
 	}
