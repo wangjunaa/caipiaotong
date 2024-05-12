@@ -9,10 +9,11 @@ import (
 )
 
 type UserDao interface {
-	Get(context.Context, string) (*models.User, error)
-	Del(context.Context, string) error
-	Add(context.Context, *models.User) error
-	Update(context.Context, *models.User) error
+	// GetByPhone 为空则返回err
+	GetByPhone(ctx context.Context, phone string) (*models.User, error)
+	DelByPhone(ctx context.Context, phone string) error
+	Add(ctx context.Context, user *models.User) error
+	Update(ctx context.Context, user *models.User) error
 }
 
 type userDao struct {
@@ -28,7 +29,7 @@ func NewUserDao(client *redis.Client, db *gorm.DB) UserDao {
 	}
 }
 
-func (d *userDao) Get(ctx context.Context, phone string) (*models.User, error) {
+func (d *userDao) GetByPhone(ctx context.Context, phone string) (*models.User, error) {
 	user, err := d.cache.GetByPhone(ctx, phone)
 	if err != nil {
 		return nil, err
@@ -47,7 +48,7 @@ func (d *userDao) Get(ctx context.Context, phone string) (*models.User, error) {
 	return user, err
 }
 
-func (d *userDao) Del(ctx context.Context, phone string) error {
+func (d *userDao) DelByPhone(ctx context.Context, phone string) error {
 	err := d.db.Where("phone = ?", phone).Delete(&models.User{}).Error
 	if err != nil {
 		return err

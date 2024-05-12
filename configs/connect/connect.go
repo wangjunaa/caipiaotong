@@ -6,6 +6,6 @@ import (
 )
 
 var (
-	DB    *gorm.DB
-	Cache *redis.Client
+	DB  *gorm.DB
+	Rdb *redis.Client
 )

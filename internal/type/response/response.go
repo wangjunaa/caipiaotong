@@ -1,5 +1,7 @@
 package response
 
+import "github.com/gin-gonic/gin"
+
 type Response struct {
 	success bool
 	code    int
@@ -7,20 +9,20 @@ type Response struct {
 	data    any
 }
 
-func SuccessResp(code int, message string, data any) Response {
+func SuccessResp(c *gin.Context, code int, message string, data any) {
 	resp := Response{
 		success: true,
 		code:    code,
 		message: message,
 		data:    data,
 	}
-	return resp
+	c.JSON(code, resp)
 }
-func ErrResp(code int, message string) Response {
+func ErrResp(c *gin.Context, code int, message string) {
 	resp := Response{
 		success: false,
 		code:    code,
 		message: message,
 	}
-	return resp
+	c.JSON(code, resp)
 }

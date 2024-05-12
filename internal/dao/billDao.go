@@ -38,9 +38,6 @@ func (d *billDao) GetById(ctx context.Context, id string) (*models.Bill, error) 
 	if bill == nil {
 		//redis中未找到记录
 		if err := d.db.Where("id = ?", id).First(&bill).Error; err != nil {
-			if errors.Is(err, gorm.ErrRecordNotFound) {
-				return nil, nil
-			}
 			return nil, err
 		}
 		err := d.cache.Add(ctx, bill)
