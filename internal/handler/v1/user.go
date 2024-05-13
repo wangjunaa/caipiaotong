@@ -1,7 +1,7 @@
-package api_v1
+package v1
 
 import (
-	"caipiaotong/configs/constant"
+	"caipiaotong/internal/constant"
 	"caipiaotong/internal/models"
 	"caipiaotong/internal/service"
 	"caipiaotong/internal/type/response"

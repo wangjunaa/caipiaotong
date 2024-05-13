@@ -1,12 +1,14 @@
-package initial
+package cache
 
 import (
-	"caipiaotong/configs/connect"
 	"context"
 	"github.com/go-redis/redis/v8"
 	"github.com/spf13/viper"
 	"log"
 )
+
+var client *redis.Client
+var ctxBg = context.Background()
 
 func newRedisClient() *redis.Client {
 	client := redis.NewClient(&redis.Options{
@@ -17,9 +19,12 @@ func newRedisClient() *redis.Client {
 	return client
 }
 func InitCache() {
-	connect.Rdb = newRedisClient()
-	if err := connect.Rdb.Ping(context.Background()).Err(); err != nil {
+	client = newRedisClient()
+	if err := client.Ping(ctxBg).Err(); err != nil {
 		panic(err)
 	}
 	log.Println("redis connected")
+}
+func GetCacheClient() *redis.Client {
+	return client
 }

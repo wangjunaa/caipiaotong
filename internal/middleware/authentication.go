@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"caipiaotong/configs/constant"
+	"caipiaotong/internal/constant"
 	"caipiaotong/internal/service"
 	"caipiaotong/internal/type/response"
 	"context"
@@ -27,7 +27,6 @@ func MwAuthentication(c *gin.Context) {
 		c.Abort()
 		return
 	}
-
 	//存入用户信息
 	c.Set(constant.CUser, *user)
 	c.Next()

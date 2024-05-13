@@ -1,29 +1,41 @@
 package service
 
 import (
-	"caipiaotong/configs/connect"
-	"caipiaotong/internal/cache"
+	"caipiaotong/internal/constant"
 	"caipiaotong/internal/dao"
 	"caipiaotong/internal/models"
 	"caipiaotong/internal/utils/BCrypt"
 	"caipiaotong/internal/utils/jwt"
-	"context"
 	"time"
 )
 
-var ctx = context.Background()
+type UserService interface {
+	Get(phone string) (*models.User, error)
+	Del(phone string, password string) error
+	Login(phone string, password string) (string, error)
+	Register(phone string, username string, password string) error
+	Update(phone string, password string, newUsername string, newPassword string) error
+}
 
-func CheckPassword(phone string, password string) error {
-	userDao := dao.NewUserDao(connect.Rdb, connect.DB)
-	user, err := userDao.GetByPhone(ctx, phone)
+type userService struct {
+	userDao dao.UserDao
+}
+
+func NewUserService() UserService {
+	return &userService{
+		userDao: dao.NewUserDao(),
+	}
+}
+
+func (s *userService) checkPassword(phone string, password string) error {
+	user, err := s.userDao.Get(constant.CtxBg, phone)
 	if err != nil {
 		return err
 	}
 	err = BCrypt.Check(password, user.Password)
 	return err
 }
-func UserCreate(phone string, username string, password string) error {
-	userDao := dao.NewUserDao(connect.Rdb, connect.DB)
+func (s *userService) Register(phone string, username string, password string) error {
 	hashedPassword, err := BCrypt.Encode(password)
 	if err != nil {
 		return err
@@ -33,15 +45,12 @@ func UserCreate(phone string, username string, password string) error {
 		Phone:    phone,
 		Password: hashedPassword,
 	}
-	err = userDao.Add(ctx, user)
+	err = s.userDao.Set(constant.CtxBg, user)
 	return err
 }
-
-// UserLogin 登录成功并返回令牌
-func UserLogin(phone string, password string) (string, error) {
+func (s *userService) Login(phone string, password string) (string, error) {
 	//获取用户信息
-	userDao := dao.NewUserDao(connect.Rdb, connect.DB)
-	user, err := userDao.GetByPhone(ctx, phone)
+	user, err := s.userDao.Get(constant.CtxBg, phone)
 	if err != nil {
 		return "", err
 	}
@@ -55,39 +64,29 @@ func UserLogin(phone string, password string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	//存储令牌
-	tokenCache := cache.NewTokenCache(connect.Rdb)
-	err = tokenCache.Add(ctx, user.Phone, token)
-	if err != nil {
-		return "", err
-	}
 	//更新用户登录时间
 	user.LoginAt = time.Now()
-	err = userDao.Update(ctx, user)
+	err = s.userDao.Update(constant.CtxBg, user)
 	if err != nil {
 		return "", err
 	}
 	//返回令牌
 	return token, nil
 }
-
-func UserGet(phone string) (*models.User, error) {
-	userDao := dao.NewUserDao(connect.Rdb, connect.DB)
-	user, err := userDao.GetByPhone(ctx, phone)
+func (s *userService) Get(phone string) (*models.User, error) {
+	user, err := s.userDao.Get(constant.CtxBg, phone)
 	if err != nil {
 		return nil, err
 	}
 	user.Password = ""
 	return user, nil
 }
-
-func UserUpdate(phone string, newUsername string, password string, newPassword string) error {
-	err := CheckPassword(phone, password)
+func (s *userService) Update(phone string, newUsername string, password string, newPassword string) error {
+	err := s.checkPassword(phone, password)
 	if err != nil {
 		return err
 	}
-	userDao := dao.NewUserDao(connect.Rdb, connect.DB)
-	user, err := userDao.GetByPhone(ctx, phone)
+	user, err := s.userDao.Get(constant.CtxBg, phone)
 	if err != nil {
 		return err
 	}
@@ -101,16 +100,14 @@ func UserUpdate(phone string, newUsername string, password string, newPassword s
 		}
 		user.Password = hashedPassword
 	}
-	err = userDao.Update(ctx, user)
+	err = s.userDao.Update(constant.CtxBg, user)
 	return err
 }
-func UserDel(phone string, password string) error {
-	err := CheckPassword(phone, password)
+func (s *userService) Del(phone string, password string) error {
+	err := s.checkPassword(phone, password)
 	if err != nil {
 		return err
 	}
-
-	userDao := dao.NewUserDao(connect.Rdb, connect.DB)
-	err = userDao.DelByPhone(ctx, phone)
+	err = s.userDao.Del(constant.CtxBg, phone)
 	return err
 }

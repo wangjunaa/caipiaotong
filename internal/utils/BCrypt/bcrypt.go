@@ -1,7 +1,7 @@
 package BCrypt
 
 import (
-	"caipiaotong/configs/constant"
+	"caipiaotong/internal/constant"
 	"fmt"
 	"golang.org/x/crypto/bcrypt"
 )

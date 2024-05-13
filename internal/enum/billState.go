@@ -1,4 +1,4 @@
-package billState
+package enum
 
 const (
 	NotPass   = iota //未通过

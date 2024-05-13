@@ -1,4 +1,4 @@
-package billType
+package enum
 
 const (
 	Accommodation  = iota //住宿

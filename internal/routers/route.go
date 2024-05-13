@@ -1,7 +1,6 @@
 package routers
 
 import (
-	"caipiaotong/internal/routers/route_v1"
 	"github.com/gin-gonic/gin"
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	"io"
@@ -23,7 +22,7 @@ func Router() *gin.Engine {
 	api := r.Group("/api")
 	{
 		v1 := api.Group("/v1")
-		route_v1.BindUserRouter(v1)
+		BindUserRouter(v1)
 	}
 	return r
 }

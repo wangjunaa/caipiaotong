@@ -1,4 +1,4 @@
-package initial
+package configs
 
 import (
 	"github.com/spf13/viper"
@@ -10,7 +10,7 @@ func InitConfig() {
 	viper.AddConfigPath("configs")
 	err := viper.ReadInConfig()
 	if err != nil {
-		panic(err.Error())
+		panic(err)
 	}
 	log.Println("config init success")
 }

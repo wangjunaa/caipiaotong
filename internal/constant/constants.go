@@ -1,6 +1,7 @@
 package constant
 
 import (
+	"context"
 	"errors"
 	"time"
 )
@@ -40,4 +41,7 @@ var (
 	ErrPasswordWrong = errors.New("密码错误")
 	ErrTokenWrong    = errors.New("令牌错误")
 	ErrHasLogin      = errors.New("已经登录")
+	//context
+	CtxTimeout = 5 * time.Second
+	CtxBg      = context.Background()
 )

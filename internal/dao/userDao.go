@@ -4,15 +4,14 @@ import (
 	"caipiaotong/internal/cache"
 	"caipiaotong/internal/models"
 	"context"
-	"github.com/go-redis/redis/v8"
 	"gorm.io/gorm"
 )
 
 type UserDao interface {
-	// GetByPhone 为空则返回err
-	GetByPhone(ctx context.Context, phone string) (*models.User, error)
-	DelByPhone(ctx context.Context, phone string) error
-	Add(ctx context.Context, user *models.User) error
+	// Get 为空则返回err
+	Get(ctx context.Context, phone string) (*models.User, error)
+	Del(ctx context.Context, phone string) error
+	Set(ctx context.Context, user *models.User) error
 	Update(ctx context.Context, user *models.User) error
 }
 
@@ -21,16 +20,16 @@ type userDao struct {
 	db    *gorm.DB
 }
 
-func NewUserDao(client *redis.Client, db *gorm.DB) UserDao {
-	c := cache.NewUserCache(client)
+func NewUserDao() UserDao {
+	c := cache.NewUserCache()
 	return &userDao{
 		cache: c,
 		db:    db,
 	}
 }
 
-func (d *userDao) GetByPhone(ctx context.Context, phone string) (*models.User, error) {
-	user, err := d.cache.GetByPhone(ctx, phone)
+func (d *userDao) Get(ctx context.Context, phone string) (*models.User, error) {
+	user, err := d.cache.Get(ctx, phone)
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +38,7 @@ func (d *userDao) GetByPhone(ctx context.Context, phone string) (*models.User, e
 		if err := d.db.Where("phone = ?", phone).First(&user).Error; err != nil {
 			return nil, err
 		}
-		err := d.cache.Add(ctx, *user)
+		err := d.cache.Set(ctx, user)
 		if err != nil {
 			return nil, err
 		}
@@ -48,20 +47,20 @@ func (d *userDao) GetByPhone(ctx context.Context, phone string) (*models.User, e
 	return user, err
 }
 
-func (d *userDao) DelByPhone(ctx context.Context, phone string) error {
+func (d *userDao) Del(ctx context.Context, phone string) error {
 	err := d.db.Where("phone = ?", phone).Delete(&models.User{}).Error
 	if err != nil {
 		return err
 	}
-	err = d.cache.DelByPhone(ctx, phone)
+	err = d.cache.Del(ctx, phone)
 	return err
 }
-func (d *userDao) Add(ctx context.Context, user *models.User) error {
+func (d *userDao) Set(ctx context.Context, user *models.User) error {
 	err := d.db.Create(user).Error
 	if err != nil {
 		return err
 	}
-	err = d.cache.DelByPhone(ctx, user.Phone)
+	err = d.cache.Del(ctx, user.Phone)
 	return err
 }
 func (d *userDao) Update(ctx context.Context, user *models.User) error {
@@ -70,6 +69,6 @@ func (d *userDao) Update(ctx context.Context, user *models.User) error {
 	if err != nil {
 		return err
 	}
-	err = d.cache.DelByPhone(ctx, phone)
+	err = d.cache.Del(ctx, phone)
 	return err
 }

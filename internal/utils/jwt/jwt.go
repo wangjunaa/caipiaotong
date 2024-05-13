@@ -1,7 +1,7 @@
 package jwt
 
 import (
-	"caipiaotong/configs/constant"
+	"caipiaotong/internal/constant"
 	"github.com/dgrijalva/jwt-go"
 	"time"
 )
