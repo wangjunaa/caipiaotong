@@ -1,4 +1,4 @@
-package BCrypt
+package encrypt
 
 import (
 	"caipiaotong/internal/constant"

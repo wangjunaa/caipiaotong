@@ -3,7 +3,7 @@ package dao
 import (
 	"caipiaotong/internal/cache"
 	"caipiaotong/internal/models"
-	"caipiaotong/internal/utils/conv"
+	"caipiaotong/internal/utils/convert"
 	"context"
 	"errors"
 	"gorm.io/gorm"
@@ -76,7 +76,7 @@ func (d *billDao) Update(ctx context.Context, bill *models.Bill) error {
 	if err != nil {
 		return err
 	}
-	billId := conv.UtoA(bill.ID)
+	billId := convert.UtoA(bill.ID)
 	err = d.cache.Del(ctx, billId)
 	return err
 }

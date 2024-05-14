@@ -35,6 +35,3 @@ func InitDB() {
 	}
 	log.Println("database connected")
 }
-func GetDB() *gorm.DB {
-	return db
-}

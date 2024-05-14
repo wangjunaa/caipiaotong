@@ -8,15 +8,9 @@ import (
 )
 
 func main() {
-
-	r := routers.Router()
-	err := r.Run(":8080")
-	if err != nil {
-		panic(err)
-	}
-}
-func init() {
 	configs.InitConfig()
 	cache.InitCache()
 	dao.InitDB()
+	r := routers.NewRouter()
+	r.Run(":8080")
 }

@@ -25,6 +25,3 @@ func InitCache() {
 	}
 	log.Println("redis connected")
 }
-func GetCacheClient() *redis.Client {
-	return client
-}

@@ -23,6 +23,8 @@ const (
 	MsgUserNotExist  = "用户不存在"
 	MsgBillNotExist  = "账单不存在"
 	MsgPasswordWrong = "密码错误"
+	MsgTokenWrong    = "令牌错误"
+	MsgHasLogin      = "已经登录"
 
 	//用于utils的常量
 	EncodeCost       = 10
@@ -30,17 +32,22 @@ const (
 	Issuer           = "www.caipiaotong.com"
 	TokenExpiresTime = 7 * 24 * time.Hour
 
-	//用于context的数据操作
-	CData  = "Data"
-	CUser  = "user"
-	CToken = "token"
+	//用于gin存取数据
+	DUser        = "user"
+	DUsername    = "username"
+	DPassword    = "password"
+	DPhone       = "phone"
+	DNewPassword = "newPassword"
+	DNewUsername = "newUsername"
+	DToken       = "token"
 )
 
 var (
 	//错误类型
-	ErrPasswordWrong = errors.New("密码错误")
-	ErrTokenWrong    = errors.New("令牌错误")
-	ErrHasLogin      = errors.New("已经登录")
+	ErrPasswordWrong = errors.New(MsgPasswordWrong)
+	ErrTokenWrong    = errors.New(MsgTokenWrong)
+	ErrHasLogin      = errors.New(MsgHasLogin)
+	ErrUserNotExist  = errors.New(MsgUserNotExist)
 	//context
 	CtxTimeout = 5 * time.Second
 	CtxBg      = context.Background()

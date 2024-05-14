@@ -1,23 +1,24 @@
 package service
 
 import (
-	"caipiaotong/internal/cache"
 	"caipiaotong/internal/constant"
+	"caipiaotong/internal/dao"
 	"caipiaotong/internal/utils/jwt"
 )
 
 type TokenService interface {
+	// Check 检查令牌格式是否正确
 	Check(token string) (phone string, err error)
 	Save(phone string, token string) error
 }
 
 type tokenService struct {
-	tokenCache cache.TokenCache
+	dao dao.TokenDao
 }
 
 func NewTokenService() TokenService {
 	return &tokenService{
-		tokenCache: cache.NewTokenCache(),
+		dao: dao.NewTokenDao(),
 	}
 }
 
@@ -29,7 +30,7 @@ func (s *tokenService) Check(token string) (phone string, err error) {
 		return "", err
 	}
 	//验证是否为最新令牌
-	tk, err := s.tokenCache.Get(constant.CtxBg, phone)
+	tk, err := s.dao.Get(constant.CtxBg, phone)
 	if err != nil {
 		return "", err
 	}
@@ -41,6 +42,6 @@ func (s *tokenService) Check(token string) (phone string, err error) {
 }
 
 func (s *tokenService) Save(phone string, token string) error {
-	err := s.tokenCache.Set(constant.CtxBg, phone, token)
+	err := s.dao.Set(constant.CtxBg, phone, token)
 	return err
 }

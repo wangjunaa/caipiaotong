@@ -3,7 +3,7 @@ package cache
 import (
 	"caipiaotong/internal/constant"
 	"caipiaotong/internal/models"
-	"caipiaotong/internal/utils/conv"
+	"caipiaotong/internal/utils/convert"
 	"context"
 	"encoding/json"
 	"errors"
@@ -34,14 +34,14 @@ func (c *billCache) Get(ctx context.Context, id string) (*models.Bill, error) {
 }
 
 func (c *billCache) del(ctx context.Context, bill *models.Bill) error {
-	billId := conv.UtoA(bill.ID)
+	billId := convert.UtoA(bill.ID)
 	//删除订单集合中订单
 	err := c.client.HDel(ctx, constant.BillCachePrefix, billId).Err()
 	if err != nil {
 		return err
 	}
 	//删除用户订单集合中订单
-	key := conv.Join(":", constant.BillCachePrefix, bill.Owner)
+	key := convert.Join(":", constant.BillCachePrefix, bill.Owner)
 	err = c.client.SRem(ctx, key, billId).Err()
 	return err
 }
@@ -58,19 +58,19 @@ func (c *billCache) Set(ctx context.Context, bill *models.Bill) error {
 	if err != nil {
 		return err
 	}
-	billId := conv.UtoA(bill.ID)
+	billId := convert.UtoA(bill.ID)
 	//添加到订单集合
 	err = c.client.HSet(ctx, constant.BillCachePrefix, billId, bytes).Err()
 	if err != nil {
 		return err
 	}
 	//添加到用户订单集合
-	key := conv.Join(":", constant.BillCachePrefix, bill.Owner)
+	key := convert.Join(":", constant.BillCachePrefix, bill.Owner)
 	err = c.client.SAdd(ctx, key, billId).Err()
 	return err
 }
 func (c *billCache) GetBillList(ctx context.Context, phone string) ([]*models.Bill, error) {
-	key := conv.Join(":", constant.BillCachePrefix, phone)
+	key := convert.Join(":", constant.BillCachePrefix, phone)
 	billIds, err := c.client.SMembers(ctx, key).Result()
 	if errors.Is(err, redis.Nil) {
 		return nil, nil
