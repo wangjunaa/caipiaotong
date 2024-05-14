@@ -53,9 +53,10 @@ func (r *router) initLogs() {
 	gin.DefaultWriter = io.MultiWriter(writer, os.Stdout)
 }
 func (r *router) bindRoute() {
-	version1 := r.engine.Group("/api/v1")
+	group := r.engine.Group("/api/v1")
 	{
-		r.bindUserRouter(version1)
+		r.bindUserRouter(group)
+		r.bindBillRouter(group)
 	}
 }
 
@@ -69,5 +70,15 @@ func (r *router) bindUserRouter(g *gin.RouterGroup) {
 		user.GET("/get", r.userHandler.Get)
 		user.POST("/update", r.userHandler.Update)
 		user.POST("/del", r.userHandler.Del)
+	}
+}
+func (r *router) bindBillRouter(g *gin.RouterGroup) {
+	bill := g.Group("/bill", r.middleware.Authentication)
+	{
+		bill.POST("/orc", r.billHandler.OCR)
+		bill.POST("/upload", r.billHandler.Upload)
+		bill.GET("/getBills", r.billHandler.GetBills)
+		bill.POST("/revocation", r.billHandler.Revocation)
+		bill.GET("/summarize", r.billHandler.Summarize)
 	}
 }

@@ -1,7 +1,7 @@
 package enum
 
 const (
-	NotPass   = iota //未通过
-	Pass             //已报销
-	Untreated        //审核中
+	BillStateNotPass   = iota //未通过
+	BillStatePass             //已报销
+	BillStateUntreated        //审核中
 )

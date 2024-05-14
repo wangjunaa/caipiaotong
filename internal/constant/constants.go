@@ -25,6 +25,7 @@ const (
 	MsgPasswordWrong = "密码错误"
 	MsgTokenWrong    = "令牌错误"
 	MsgHasLogin      = "已经登录"
+	MsgPageOut       = "已到最后"
 
 	//用于utils的常量
 	EncodeCost       = 10
@@ -33,13 +34,21 @@ const (
 	TokenExpiresTime = 7 * 24 * time.Hour
 
 	//用于gin存取数据
-	DUser        = "user"
-	DUsername    = "username"
-	DPassword    = "password"
-	DPhone       = "phone"
-	DNewPassword = "newPassword"
-	DNewUsername = "newUsername"
-	DToken       = "token"
+	DUser         = "user"
+	DUsername     = "username"
+	DPassword     = "password"
+	DPhone        = "phone"
+	DNewPassword  = "newPassword"
+	DNewUsername  = "newUsername"
+	DToken        = "token"
+	DBillType     = "type"
+	DBillCost     = "cost"
+	DBillName     = "name"
+	DBillState    = "state"
+	DBillMinCost  = "minCost"
+	DBillMaxCost  = "maxCost"
+	DBillPageSize = "pageSize"
+	DBillPageNum  = "pageNum"
 )
 
 var (
@@ -48,6 +57,7 @@ var (
 	ErrTokenWrong    = errors.New(MsgTokenWrong)
 	ErrHasLogin      = errors.New(MsgHasLogin)
 	ErrUserNotExist  = errors.New(MsgUserNotExist)
+	ErrPageOut       = errors.New(MsgPageOut)
 	//context
 	CtxTimeout = 5 * time.Second
 	CtxBg      = context.Background()

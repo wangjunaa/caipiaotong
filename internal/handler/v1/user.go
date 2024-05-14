@@ -57,25 +57,32 @@ func (h *userHandler) Get(c *gin.Context) {
 }
 func (h *userHandler) Update(c *gin.Context) {
 	user := c.MustGet(constant.DUser).(models.User)
-	password := c.PostForm(constant.DPassword)
-	newUsername := c.PostForm(constant.DNewUsername)
-	newPassword := c.PostForm(constant.DNewPassword)
+	var data = struct {
+		Password    string `form:"password"`
+		NewUsername string `form:"newUsername"`
+		NewPassword string `form:"newPassword"`
+	}{}
+	err := c.Bind(&data)
+	if err != nil {
+		h.resp.Error(c, 400, err)
+	}
+
 	//验证密码
-	err := encrypt.Check(password, user.Password)
+	err = encrypt.Check(data.Password, user.Password)
 	if err != nil {
 		h.resp.Error(c, 400, err)
 		return
 	}
 	//更新用户
-	if newPassword != "" {
-		newPassword, err = encrypt.Encode(newPassword)
+	if data.NewPassword != "" {
+		data.NewPassword, err = encrypt.Encode(data.NewPassword)
 		if err != nil {
 			h.resp.Error(c, 400, err)
 		}
-		user.Password = newPassword
+		user.Password = data.NewPassword
 	}
-	if newUsername != "" {
-		user.Username = newUsername
+	if data.NewUsername != "" {
+		user.Username = data.NewUsername
 	}
 	err = h.service.Update(&user)
 	if err != nil {

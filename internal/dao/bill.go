@@ -15,8 +15,8 @@ type BillDao interface {
 	Del(ctx context.Context, id string) error
 	Set(ctx context.Context, bill *models.Bill) error
 	Update(ctx context.Context, bill *models.Bill) error
-	// GetBillList 未找到记录返空列表
-	GetBillList(ctx context.Context, phone string) ([]*models.Bill, error)
+	// ConditionGet 未找到记录返空列表
+	ConditionGet(ctx context.Context, phone string, minCost int, maxCost int) ([]models.Bill, error)
 }
 type billDao struct {
 	cache cache.BillCache
@@ -52,7 +52,7 @@ func (d *billDao) Get(ctx context.Context, id string) (*models.Bill, error) {
 }
 
 func (d *billDao) Del(ctx context.Context, billId string) error {
-	err := d.db.Where("id = ?", billId).Delete(&models.User{}).Error
+	err := d.db.Where("id = ?", billId).Delete(&models.Bill{}).Error
 	if err != nil {
 		return err
 	}
@@ -81,28 +81,14 @@ func (d *billDao) Update(ctx context.Context, bill *models.Bill) error {
 	return err
 }
 
-func (d *billDao) GetBillList(ctx context.Context, phone string) ([]*models.Bill, error) {
-	bills, err := d.cache.GetBillList(ctx, phone)
+func (d *billDao) ConditionGet(ctx context.Context, phone string, minCost int, maxCost int) ([]models.Bill, error) {
+	var bills []models.Bill
+	err := d.db.Where("owner = ? AND cost BETWEEN ? AND ?", phone, minCost, maxCost).Find(&bills).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, err
+	}
 	if err != nil {
 		return nil, err
 	}
-	if len(bills) == 0 {
-		//redis无记录
-		var bills []*models.Bill
-		err := d.db.Where("owner = ?", phone).Find(bills).Error
-		if err != nil {
-			if errors.Is(err, gorm.ErrRecordNotFound) {
-				return bills, nil
-			}
-			return nil, err
-		}
-		//更新到cache
-		err = d.cache.MutiSet(ctx, bills...)
-		if err != nil {
-			return nil, err
-		}
-
-		return bills, nil
-	}
-	return bills, nil
+	return bills, err
 }

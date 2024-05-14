@@ -28,29 +28,31 @@ func NewBillCache() BillCache {
 
 func (c *billCache) Get(ctx context.Context, id string) (*models.Bill, error) {
 	result, err := c.client.HGet(ctx, constant.BillCachePrefix, id).Result()
+	if errors.Is(err, redis.Nil) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
 	bill := &models.Bill{}
 	err = json.Unmarshal([]byte(result), &bill)
 	return bill, err
-}
-
-func (c *billCache) del(ctx context.Context, bill *models.Bill) error {
-	billId := convert.UtoA(bill.ID)
-	//删除订单集合中订单
-	err := c.client.HDel(ctx, constant.BillCachePrefix, billId).Err()
-	if err != nil {
-		return err
-	}
-	//删除用户订单集合中订单
-	key := convert.Join(":", constant.BillCachePrefix, bill.Owner)
-	err = c.client.SRem(ctx, key, billId).Err()
-	return err
 }
 func (c *billCache) Del(ctx context.Context, id string) error {
 	bill, err := c.Get(ctx, id)
 	if err != nil {
 		return err
 	}
-	err = c.del(ctx, bill)
+	if bill != nil {
+		//删除用户订单集合中订单
+		key := convert.Join(":", constant.BillCachePrefix, bill.Owner)
+		err = c.client.SRem(ctx, key, id).Err()
+	}
+	//删除订单集合中订单
+	err = c.client.HDel(ctx, constant.BillCachePrefix, id).Err()
+	if err != nil {
+		return err
+	}
 	return err
 }
 func (c *billCache) Set(ctx context.Context, bill *models.Bill) error {
