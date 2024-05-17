@@ -1,7 +1,7 @@
 package routers
 
 import (
-	v1 "caipiaotong/internal/handler/v1"
+	v1 "caipiaotong/internal/controller/v1"
 	"caipiaotong/internal/middleware"
 	"github.com/gin-gonic/gin"
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"

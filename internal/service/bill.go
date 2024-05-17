@@ -5,7 +5,7 @@ import (
 	"caipiaotong/internal/dao"
 	"caipiaotong/internal/enum"
 	"caipiaotong/internal/models"
-	"golang.org/x/sys/windows"
+	"math"
 )
 
 type BillService interface {
@@ -60,7 +60,7 @@ func (s *billService) ConditionGet(phone string, minCost int, maxCost int, pageS
 	return bills, nil
 }
 func (s *billService) Summarize(phone string) (map[string]int, error) {
-	bills, err := s.dao.ConditionGet(constant.CtxBg, phone, 0, windows.INFINITE)
+	bills, err := s.dao.ConditionGet(constant.CtxBg, phone, 0, math.MaxInt32)
 	if err != nil {
 		return nil, err
 	}
