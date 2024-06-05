@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"caipiaotong/internal/constant"
-	"caipiaotong/internal/response"
+	"caipiaotong/internal/controller"
 	"caipiaotong/internal/service"
 	"github.com/gin-gonic/gin"
 )
@@ -14,14 +14,14 @@ type Middleware interface {
 type middleware struct {
 	userService  service.UserService
 	tokenService service.TokenService
-	resp         response.Resp
+	resp         controller.Resp
 }
 
 func NewMiddleware() Middleware {
 	return &middleware{
 		userService:  service.NewUserService(),
 		tokenService: service.NewTokenService(),
-		resp:         response.NewResp(),
+		resp:         controller.NewResp(),
 	}
 }
 

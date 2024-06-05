@@ -2,8 +2,8 @@ package v1
 
 import (
 	"caipiaotong/internal/constant"
+	"caipiaotong/internal/controller"
 	"caipiaotong/internal/models"
-	"caipiaotong/internal/response"
 	"caipiaotong/internal/service"
 	"caipiaotong/internal/utils/encrypt"
 	"github.com/gin-gonic/gin"
@@ -18,13 +18,13 @@ type UserHandler interface {
 }
 type userHandler struct {
 	service service.UserService
-	resp    response.Resp
+	resp    controller.Resp
 }
 
 func NewUserHandler() UserHandler {
 	return &userHandler{
 		service: service.NewUserService(),
-		resp:    response.NewResp(),
+		resp:    controller.NewResp(),
 	}
 }
 

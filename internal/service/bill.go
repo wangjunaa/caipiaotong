@@ -12,7 +12,7 @@ type BillService interface {
 	Add(ownerPhone string, name string, cost int, billType int) error
 	Del(billId string) error
 	OCR(image []byte) (*models.Bill, error)
-	ConditionGet(phone string, minCost int, maxCost int, pageSize int, pageNum int) ([]models.Bill, error)
+	ConditionGet(phone string, minCost int, maxCost int) ([]models.Bill, error)
 	Summarize(phone string) (map[string]int, error)
 }
 
@@ -42,7 +42,7 @@ func (s *billService) OCR(image []byte) (*models.Bill, error) {
 	panic("implement me")
 }
 
-func (s *billService) ConditionGet(phone string, minCost int, maxCost int, pageSize int, pageNum int) ([]models.Bill, error) {
+func (s *billService) ConditionGet(phone string, minCost int, maxCost int) ([]models.Bill, error) {
 	bills, err := s.dao.ConditionGet(constant.CtxBg, phone, minCost, maxCost)
 	if err != nil {
 		return nil, err
@@ -50,14 +50,11 @@ func (s *billService) ConditionGet(phone string, minCost int, maxCost int, pageS
 	if len(bills) == 0 {
 		return nil, err
 	}
-	totalPageNum := len(bills) / pageSize
-	if pageNum > totalPageNum {
-		return nil, constant.ErrPageOut
+	var res []models.Bill
+	for i := len(bills) - 1; i >= 0; i-- {
+		res = append(res, bills[i])
 	}
-	start := pageSize * pageNum
-	end := min(pageSize*(pageNum+1), len(bills))
-	bills = bills[start:end]
-	return bills, nil
+	return res, nil
 }
 func (s *billService) Summarize(phone string) (map[string]int, error) {
 	bills, err := s.dao.ConditionGet(constant.CtxBg, phone, 0, math.MaxInt32)

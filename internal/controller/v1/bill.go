@@ -2,9 +2,8 @@ package v1
 
 import (
 	"caipiaotong/internal/constant"
-	"caipiaotong/internal/enum"
+	"caipiaotong/internal/controller"
 	"caipiaotong/internal/models"
-	"caipiaotong/internal/response"
 	"caipiaotong/internal/service"
 	"github.com/gin-gonic/gin"
 	"math"
@@ -19,7 +18,7 @@ type BillHandler interface {
 }
 type billHandler struct {
 	service service.BillService
-	resp    response.Resp
+	resp    controller.Resp
 }
 
 func (h *billHandler) OCR(c *gin.Context) {
@@ -59,7 +58,8 @@ func (h *billHandler) GetBills(c *gin.Context) {
 		PageSize int `form:"pageSize"`
 		PageNum  int `form:"pageNum"`
 	}{
-		State:    enum.BillStateUntreated,
+		Type:     -1,
+		State:    -1,
 		MinCost:  0,
 		MaxCost:  math.MaxInt32,
 		PageSize: math.MaxInt32,
@@ -70,10 +70,37 @@ func (h *billHandler) GetBills(c *gin.Context) {
 		h.resp.Error(c, 400, err)
 		return
 	}
-	bills, err := h.service.ConditionGet(user.Phone, data.MinCost, data.MaxCost, data.PageSize, data.PageNum)
+	bills, err := h.service.ConditionGet(user.Phone, data.MinCost, data.MaxCost)
+
 	if err != nil {
 		h.resp.Error(c, 400, err)
 		return
+	}
+	if data.Type != -1 {
+		var temp []models.Bill
+		for _, bill := range bills {
+			if bill.Type == data.Type {
+				temp = append(temp, bill)
+			}
+		}
+		bills = temp
+	}
+	if data.State != -1 {
+		var temp []models.Bill
+		for _, bill := range bills {
+			if bill.State == data.State {
+				temp = append(temp, bill)
+			}
+		}
+		bills = temp
+	}
+	start := data.PageNum * data.PageSize
+	end := (data.PageNum + 1) * data.PageSize
+	end = min(end, len(bills)-1)
+	if start >= len(bills) {
+		bills = nil
+	} else {
+		bills = bills[start : end+1]
 	}
 	h.resp.Success(c, constant.MsgSuccess, bills)
 }
@@ -108,6 +135,6 @@ func (h *billHandler) Summarize(c *gin.Context) {
 func NewBillHandler() BillHandler {
 	return &billHandler{
 		service: service.NewBillService(),
-		resp:    response.NewResp(),
+		resp:    controller.NewResp(),
 	}
 }
